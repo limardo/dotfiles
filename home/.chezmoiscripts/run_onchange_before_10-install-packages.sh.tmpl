@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Installs brew/Brewfile.common and the Brewfile of this machine type. chezmoi
+# re-runs it when either Brewfile changes: their hashes are in the rendered
+# script.
+set -euo pipefail
+
+# Brewfile.common: {{ include (joinPath .chezmoi.workingTree "brew/Brewfile.common") | sha256sum }}
+# Brewfile.{{ .machine_type }}: {{ include (joinPath .chezmoi.workingTree (printf "brew/Brewfile.%s" .machine_type)) | sha256sum }}
+
+readonly BREW_DIR={{ joinPath .chezmoi.workingTree "brew" | quote }}
+readonly MACHINE_TYPE={{ .machine_type | quote }}
+
+log()  { echo "[packages] $*"; }
+ok()   { echo "[packages] ✓ $*"; }
+
+# A Homebrew installed earlier in this same apply is not on chezmoi's PATH yet
+# (Apple Silicon).
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+log "Installing common packages..."
+brew bundle --file="${BREW_DIR}/Brewfile.common"
+ok "Brewfile.common done"
+
+log "Installing ${MACHINE_TYPE} packages..."
+brew bundle --file="${BREW_DIR}/Brewfile.${MACHINE_TYPE}"
+ok "Brewfile.${MACHINE_TYPE} done"

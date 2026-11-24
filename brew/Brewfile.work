@@ -1,0 +1,23 @@
+# ── CLI tools ─────────────────────────────────────────────────────
+brew "aws-sam-cli"
+brew "awscli"
+brew "ollama"
+
+# ── App ───────────────────────────────────────────────────────────
+cask "azure-cli"
+cask "bruno"
+cask "drawio"
+cask "gcloud-cli"
+cask "goland"
+cask "intellij-idea"
+cask "lens"
+cask "microsoft-teams"
+cask "mockoon"
+cask "obsidian"
+cask "phpstorm"
+cask "pycharm"
+cask "session-manager-plugin"
+cask "slack"
+cask "tunnelblick"
+cask "visual-studio-code"
+cask "webstorm"

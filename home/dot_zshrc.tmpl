@@ -1,0 +1,163 @@
+export ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+mkdir -p "$ZSH_CACHE_DIR/completions"
+
+# ════════════════════════════════════════════════════════════════
+# BREW PREFIX (cached once to avoid subprocess overhead)
+# ════════════════════════════════════════════════════════════════
+
+BREW_PREFIX=$(brew --prefix)
+
+# ════════════════════════════════════════════════════════════════
+# FPATH — completions of brew packages (e.g. kubectl, gh, etc.)
+# Must come before sheldon + compinit
+# ════════════════════════════════════════════════════════════════
+
+fpath=("$ZSH_CACHE_DIR/completions" $fpath)
+FPATH=$BREW_PREFIX/share/zsh/site-functions:$FPATH
+
+# ════════════════════════════════════════════════════════════════
+# SHELL OPTIONS
+# ════════════════════════════════════════════════════════════════
+
+setopt AUTO_CD
+setopt AUTO_PUSHD
+setopt PUSHD_IGNORE_DUPS
+setopt PUSHD_SILENT
+setopt CORRECT
+setopt INTERACTIVE_COMMENTS
+setopt NO_BEEP
+
+
+# ════════════════════════════════════════════════════════════════
+# HISTORY
+# ════════════════════════════════════════════════════════════════
+
+HISTFILE=~/.zsh_history
+HISTSIZE=100000
+SAVEHIST=100000
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_VERIFY
+setopt SHARE_HISTORY
+setopt HIST_REDUCE_BLANKS
+
+# ════════════════════════════════════════════════════════════════
+# KEYMAP — before sheldon: its hooks bind into the current keymap
+# ════════════════════════════════════════════════════════════════
+
+bindkey -v
+
+# Option+arrow: not bound in viins. Ghostty sends ESC b / ESC f, but
+# a terminal may send the CSI form: both are bound, so the key
+# works either way.
+bindkey -M viins '^[b' backward-word
+bindkey -M viins '^[f' forward-word
+bindkey -M viins '^[[1;3D' backward-word
+bindkey -M viins '^[[1;3C' forward-word
+
+bindkey -M viins '^A' beginning-of-line
+bindkey -M viins '^E' end-of-line
+bindkey -M viins '^K' kill-line
+bindkey -M viins '^Y' yank
+
+# Without '/' word movement stops at every path segment.
+WORDCHARS=${WORDCHARS//[\/]}
+
+# ════════════════════════════════════════════════════════════════
+# SHELDON — loads plugins and adds fpath
+# ════════════════════════════════════════════════════════════════
+
+eval "$(sheldon source)"
+
+# ════════════════════════════════════════════════════════════════
+# COMPLETIONS — after sheldon, so the plugin fpaths are included
+# ════════════════════════════════════════════════════════════════
+
+autoload -Uz compinit && compinit
+autoload -U +X bashcompinit && bashcompinit
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*:descriptions' format $'\n%F{yellow}%U%B%d%b%u%f\n'
+zstyle ':completion:*' group-name ''
+zstyle ':completion::complete:*' use-cache on
+
+# ════════════════════════════════════════════════════════════════
+# BASH-STYLE COMPLETIONS
+# ════════════════════════════════════════════════════════════════
+
+command -v terraform &>/dev/null && complete -o nospace -C terraform terraform
+command -v terragrunt &>/dev/null && complete -o nospace -C terragrunt terragrunt
+command -v tofu &>/dev/null && complete -o nospace -C tofu tofu
+
+{{ if eq .machine_type "work" -}}
+command -v gcloud &>/dev/null && source "$BREW_PREFIX/share/google-cloud-sdk/path.zsh.inc"
+command -v gcloud &>/dev/null && source "$BREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc"
+{{- end }}
+
+# ════════════════════════════════════════════════════════════════
+# EXPORTS
+# ════════════════════════════════════════════════════════════════
+
+export EDITOR="vim"
+export SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock"
+
+{{ if eq .machine_type "work" -}}
+export AWS_PROFILE=default
+export KUBECONFIG="$HOME/.kube/config"
+{{- end }}
+
+# ════════════════════════════════════════════════════════════════
+# ALIASES
+# ════════════════════════════════════════════════════════════════
+
+alias ls='eza --icons --group-directories-first'
+alias ll='eza -la --icons --git --group-directories-first'
+alias lt='eza --tree --icons --level=2'
+alias cat='bat --style=auto'
+alias grep='rg'
+alias find='fd'
+alias diff='delta'
+alias top='btop'
+
+# tmux
+alias ta='tmux attach -t'
+alias tl='tmux list-sessions'
+alias tn='tmux new -s'
+alias tk='tmux kill-session -t'
+
+# Homebrew
+alias brewup='brew update && brew upgrade --greedy && brew cleanup --prune=0'
+
+# Claude Code
+alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'
+
+# ════════════════════════════════════════════════════════════════
+# FUNCTIONS
+# ════════════════════════════════════════════════════════════════
+
+port() { lsof -i ":$1" }
+
+reload-comp() {
+  rm -f ~/.zcompdump
+  compinit
+  echo "completions rebuilt"
+}
+
+{{ if eq .machine_type "work" -}}
+awsp() {
+  export AWS_PROFILE=$(aws configure list-profiles | fzf --height 40%)
+  echo "AWS_PROFILE=$AWS_PROFILE"
+}
+
+_load_kubeconfig() {
+  for kubeconfig in "${HOME}/.kube/config-"*; do
+    [[ -f "$kubeconfig" ]] && export KUBECONFIG="${KUBECONFIG}:${kubeconfig}"
+  done
+}
+
+_load_kubeconfig
+{{- end }}

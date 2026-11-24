@@ -1,0 +1,60 @@
+[tools]
+usage = "latest"
+
+# Ansible
+"pipx:ansible-core" = { version = "latest" }
+
+# Go
+go = "latest"
+
+# Kubernetes
+kubectl = "latest"
+helm = "latest"
+kubectx = "latest"
+k9s = "latest"
+
+# Java
+java = "latest"
+maven = "latest"
+
+# Node
+node = "latest"
+yarn = "latest"
+pnpm = "latest"
+"npm:defuddle" = "latest"
+"npm:@adobe/aio-cli" = { version = "latest", trust_policy_excludes = ["hosted-git-info@6.1.3"] }
+"npm:@tobilu/qmd" = "latest"
+
+# Bun
+bun = "latest"
+
+# Python
+uv = "latest"
+pre-commit = "latest"
+
+#Ruby
+ruby = "latest"
+
+# Rust
+rust = "latest"
+
+# Terraform
+opentofu = "latest"
+terraform = "latest"
+terraform-docs = "latest" 
+tflint = "latest"
+terragrunt = "latest"
+
+# Moonrepo
+"aqua:moonrepo/moon" = "latest"
+
+# GitLab
+glab = "latest"
+
+[settings]
+experimental = true
+legacy_version_file = true
+idiomatic_version_file_enable_tools = ["node", "terraform"]
+
+[hooks]
+postinstall = "~/.config/mise/after-install.sh"

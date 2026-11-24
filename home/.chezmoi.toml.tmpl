@@ -1,0 +1,12 @@
+{{/* Prompt and data key are identical on purpose: that way `--promptChoice machine_type=...`
+     and `--promptString git_email=...` keep working as long as the prompt text is never touched. */}}
+{{- $machineType := promptChoiceOnce . "machine_type" "machine_type" (list "personal" "work") -}}
+{{- $gitEmail := promptStringOnce . "git_email" "git_email" -}}
+
+{{/* The repo root, not home/: chezmoi follows .chezmoiroot from there, and
+     the scripts reach brew/ through .chezmoi.workingTree. */}}
+sourceDir = "{{ .chezmoi.workingTree }}"
+
+[data]
+  machine_type = "{{ $machineType }}"
+  git_email = "{{ $gitEmail }}"

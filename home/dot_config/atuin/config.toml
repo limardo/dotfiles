@@ -1,0 +1,21 @@
+auto_sync = false
+update_check = false
+style = "full"
+inline_height = 20
+show_preview = true
+exit_mode = "return-query"
+enter_accept = true
+max_preview_height = 3
+
+history_filter = [
+  "^ls$", "^ll$", "^lt$",
+  "^cd$", "^cd \\.\\.$",
+  "^exit$", "^clear$", "^pwd$",
+  "^ ",
+]
+
+[sync]
+records = true
+
+[ai]
+enabled = false
