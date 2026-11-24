@@ -30,7 +30,7 @@ bun = "latest"
 
 # Python
 uv = "latest"
-pre-commit = "latest"
+"pipx:pre-commit" = "latest"
 
 #Ruby
 ruby = "latest"

@@ -5,9 +5,12 @@ set -euo pipefail
 
 readonly HOMEBREW_INSTALL_URL='https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh'
 
-log()  { echo "[homebrew] $*"; }
-ok()   { echo "[homebrew] ✓ $*"; }
-fail() { echo "[homebrew] ✗ $*" >&2; exit 1; }
+log() { echo "[homebrew] $*"; }
+ok() { echo "[homebrew] ✓ $*"; }
+fail() {
+  echo "[homebrew] ✗ $*" >&2
+  exit 1
+}
 
 if [[ -x /opt/homebrew/bin/brew ]] || command -v brew &>/dev/null; then
   ok "Homebrew already present"

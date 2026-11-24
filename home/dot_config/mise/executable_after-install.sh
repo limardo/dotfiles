@@ -66,17 +66,17 @@ mkdir -p "${COMP_DIR}"
 _gen _usage usage --completions zsh
 
 # ── python ───────────────────────────────────────────────────────
-_gen _uv  uv  generate-shell-completion zsh
+_gen _uv uv generate-shell-completion zsh
 _gen _uvx uvx --generate-shell-completion zsh
 
 # ── kubernetes ───────────────────────────────────────────────────
 _gen _kubectl kubectl completion zsh
-_gen _helm    helm    completion zsh
-_gen _k9s     k9s     completion zsh
+_gen _helm helm completion zsh
+_gen _k9s k9s completion zsh
 
 # ── rust ─────────────────────────────────────────────────────────
 _gen _rustup rustup completions zsh
-_gen _cargo  rustup completions zsh cargo
+_gen _cargo rustup completions zsh cargo
 
 # ── terraform ────────────────────────────────────────────────────
 # terraform, terragrunt and tofu have no subcommand that emits a
@@ -86,7 +86,7 @@ _gen _terraform-docs terraform-docs completion zsh
 
 # ── node ─────────────────────────────────────────────────────────
 _gen _pnpm pnpm completion zsh
-_gen _bun  bun  completions
+_gen _bun bun completions
 
 # ── moonrepo ─────────────────────────────────────────────────────
 _gen _moon moon completions --shell zsh
