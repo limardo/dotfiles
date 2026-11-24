@@ -1,0 +1,14 @@
+{{/* tmux plugin manager, loaded by the last line of ~/.tmux.conf. A clone,
+     not an archive: tpm updates itself and its plugins with git. git is
+     /usr/bin/git, from the Command Line Tools the Homebrew installer adds. */}}
+[".tmux/plugins/tpm"]
+  type = "git-repo"
+  url = "https://github.com/tmux-plugins/tpm.git"
+  refreshPeriod = "168h"
+
+{{/* Global Claude Code rule, taken as-is from upstream: follows main, so an
+     upstream change lands in the rule at the next weekly refresh. */}}
+[".claude/rules/karpathy.md"]
+  type = "file"
+  url = "https://raw.githubusercontent.com/multica-ai/andrej-karpathy-skills/main/CLAUDE.md"
+  refreshPeriod = "168h"

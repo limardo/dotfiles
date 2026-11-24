@@ -12,4 +12,6 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$(mktemp -d)" init --apply --source 
 
 Bitwarden is not needed to install: no template reads from the vault. When one does, `bw` must be installed by a `hooks.read-source-state.pre` hook, because templates are rendered before the `before_` scripts run.
 
+`~/.ssh`, `~/.aws` and `~/.kube` are not installed by chezmoi: they come from the old machine, through `scripts/secrets_backup.sh backup` there and `restore` on the new one.
+
 `SSH_AUTH_SOCK` points to `~/.bitwarden-ssh-agent.sock`: SSH keys come from the Bitwarden desktop app's agent, not from `~/.ssh`.

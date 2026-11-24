@@ -1,0 +1,77 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /*
+  Claude Code rewrites ~/.claude/settings.json on its own (plugins, theme,
+  autoMode). The keys below are owned by the repo and overwrite the current
+  values; every other key in the file is kept as it is on the machine.
+  autoMode and statusLine are machine-specific and stay out of the repo on
+  purpose.
+*/ -}}
+{{- $current := dict -}}
+{{- if .chezmoi.stdin -}}
+{{-   $current = fromJson .chezmoi.stdin -}}
+{{- end -}}
+{{- $managed := `{
+  "env": {
+    "_ZO_DOCTOR": "0"
+  },
+  "includeCoAuthoredBy": false,
+  "model": "opus",
+  "enableWorkflows": true,
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": false,
+    "code-review@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "ralph-loop@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "obsidian@obsidian-skills": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "secret-box@claude-code-mods": true,
+    "decision-tree@claude-code-mods": false,
+    "linkedin-agent@linkedin-agent-skill": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-code-plugins": {
+      "source": { "source": "github", "repo": "anthropics/claude-code" }
+    },
+    "claude-plugins-official": {
+      "source": { "source": "github", "repo": "anthropics/claude-plugins-official" }
+    },
+    "karpathy-skills": {
+      "source": { "source": "github", "repo": "forrestchang/andrej-karpathy-skills" }
+    },
+    "obsidian-skills": {
+      "source": { "source": "github", "repo": "kepano/obsidian-skills" }
+    },
+    "claude-code-mods": {
+      "source": { "source": "github", "repo": "ray-amjad/claude-code-mods" }
+    },
+    "linkedin-agent-skill": {
+      "source": { "source": "github", "repo": "Jakeschincariol/linkedin-agent-skill" }
+    }
+  },
+  "language": "Italian",
+  "effortLevel": "medium",
+  "tui": "fullscreen",
+  "theme": "dark",
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "pluginConfigs": {
+    "secret-box@claude-code-mods": {
+      "options": {
+        "secrets": true,
+        "pii": false,
+        "hideEmails": true,
+        "redactPrivateIps": false,
+        "restoreInToolInputs": true,
+        "notify": true,
+        "allowUrlHosts": "drive.google.com,docs.google.com"
+      }
+    }
+  }
+}` | fromJson -}}
+{{- mergeOverwrite $current $managed | toPrettyJson }}

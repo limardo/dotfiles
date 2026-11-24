@@ -201,6 +201,19 @@ chezmoi state delete-bucket --bucket=scriptState  # run_once_ scripts
 (`~/.bitwarden-ssh-agent.sock`): SSH keys live in the vault, not in `~/.ssh`.
 Turn on the SSH agent in the Bitwarden desktop app, or SSH will find no keys.
 
+## Moving credentials to a new machine
+
+`~/.ssh`, `~/.aws` and `~/.kube` are not in the repo. Carry them by hand:
+
+```bash
+scripts/secrets_backup.sh backup [dir]       # old machine, default ~/Backups
+scripts/secrets_backup.sh restore <archive>  # new machine
+```
+
+The archive is a plain `tar.gz`, **not encrypted**: move it on a medium you
+trust and delete it once restored. Caches (`.aws/cli/cache`, `.aws/sso/cache`,
+`.kube/cache`) are left out.
+
 ## Development
 
 ```bash
