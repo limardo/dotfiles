@@ -204,9 +204,22 @@ Turn on the SSH agent in the Bitwarden desktop app, or SSH will find no keys.
 ## Development
 
 ```bash
-make lint         # shellcheck on every script (needs: brew install shellcheck)
-make brew-check   # do the Brewfiles match what is installed on this machine?
-make validate     # both
+pre-commit install          # once per clone: checks run on every commit
+pre-commit run --all-files  # run them on the whole repo
+```
+
+### Brew check
+
+Do the Brewfiles match what is installed on this machine? Not a pre-commit
+hook: it checks the machine, not the code. It lists what is missing; anything
+installed by hand and absent from the Brewfiles shows up with
+`brew bundle cleanup`, which only prints unless given `--force`.
+
+```bash
+machine_type="$(chezmoi execute-template '{{ .machine_type }}')"
+brew bundle check --file=brew/Brewfile.common --no-upgrade --verbose
+brew bundle check --file="brew/Brewfile.${machine_type}" --no-upgrade --verbose
+cat brew/Brewfile.common "brew/Brewfile.${machine_type}" | brew bundle cleanup --file=-
 ```
 
 ## License

@@ -12,7 +12,7 @@ macOS dotfiles managed with chezmoi. A single codebase serves two machine profil
   - `run_onchange_after_20-macos-defaults.sh` — macOS system defaults (idempotent); re-runs when the file changes
 - `brew/` — `Brewfile.common` + `Brewfile.work` / `Brewfile.personal`, outside the source state: the packages script reads them through `.chezmoi.workingTree`
 
-Why `home/` and not the repo root: with the repo root as source state, every file not starting with `.` (`README.md`, `Makefile`, `CLAUDE.md`, `brew/`) would be deployed to `$HOME` unless listed in a `.chezmoiignore`. `CLAUDE.md` in `~` would load into every Claude Code session under the home directory.
+Why `home/` and not the repo root: with the repo root as source state, every file not starting with `.` (`README.md`, `CLAUDE.md`, `brew/`, `scripts/`) would be deployed to `$HOME` unless listed in a `.chezmoiignore`. `CLAUDE.md` in `~` would load into every Claude Code session under the home directory.
 
 ## Machine identity — `machine_type` and `git_email`
 

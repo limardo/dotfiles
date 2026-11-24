@@ -1,56 +1,55 @@
 # Validation
 
-Static, on the host.
+Static, on the host, through pre-commit:
 
 ```bash
-make lint         # shellcheck on every shell script in the repo
-make templates    # render every template for both machine types and check it
-make brew-check   # do the Brewfiles actually describe this machine?
-make validate     # all three
+pre-commit install          # once per clone
+pre-commit run --all-files  # whole repo
 ```
 
-## `make lint`
+`.pre-commit-config.yaml` runs before each commit: gitleaks, shfmt, shellcheck,
+actionlint, taplo, `scripts/check_templates.sh` and `scripts/check_email.sh`.
+On the `commit-msg` hook, conventional-pre-commit enforces Conventional Commits.
+Hook repos are pinned by commit SHA: update with `pre-commit autoupdate --freeze`.
 
-Covers the scripts in `home/.chezmoiscripts/`, `scripts/` and
-`home/dot_config/mise/executable_after-install.sh`.
-They must stay **free of any warning**, not just free of errors.
+CI (`.github/workflows/lint.yml`) runs `pre-commit run --all-files` on every
+push to `main` and every PR.
 
-CI (`.github/workflows/lint.yml`) runs the same `make lint` on every push to
-`main` and every PR, once per machine type, with a throwaway chezmoi config.
+## shellcheck
 
-shellcheck cannot read a `.tmpl`: the script templates (`SHELL_TEMPLATES` in the
-Makefile) are rendered with `chezmoi execute-template` for this machine and
-checked on stdin.
+Every shell script must stay **free of any warning**, not just free of errors.
+zsh files are excluded: shellcheck does not support zsh.
 
-`shellcheck` is assumed to be installed: it is in no Brewfile, and the target
-fails with the install command if it is missing.
+## Templates
 
-## `make templates`
+shellcheck cannot read a `.tmpl`. `scripts/check_templates.sh` runs
+`chezmoi init` against a throwaway config once per machine type (so
+`home/.chezmoi.toml.tmpl` is checked too), renders every `home/**/*.tmpl` and
+checks the output: shellcheck for `*.sh.tmpl`, `zsh -n` for `dot_zshrc.tmpl`,
+`git config --list` for `dot_gitconfig.tmpl`. Any other template is checked by
+rendering alone; add a `case` branch for a new format. It needs `chezmoi`,
+`shellcheck` and `zsh` on the `PATH`.
 
-`scripts/check_templates.sh` runs `chezmoi init` against a throwaway config once
-per machine type (so `home/.chezmoi.toml.tmpl` is checked too), renders every
-`home/**/*.tmpl` and checks the output: shellcheck for `*.sh.tmpl`, `zsh -n`
-for `dot_zshrc.tmpl`, `git config --list` for `dot_gitconfig.tmpl`. Any other
-template is checked by rendering alone; add a `case` branch for a new format.
+## taplo
 
-## pre-commit
+Run with `--no-schema` (the default catalog fails to load), but a file's own
+`"$schema"` is still applied: `starship.toml` is validated against
+starship.rs, which needs network.
 
-`.pre-commit-config.yaml` runs before each commit: gitleaks, shfmt, actionlint,
-taplo, `make lint`, `scripts/check_templates.sh`, and
-`scripts/check_email.sh` (fails if a file contains this machine's
-`git config user.email`: gitleaks does not treat an email as a secret). On the
-`commit-msg` hook, conventional-pre-commit enforces Conventional Commits.
+## No personal email
 
-Enable once per clone with `pre-commit install`; run everything with
-`pre-commit run --all-files`. Hook repos are pinned by commit SHA:
-update with `pre-commit autoupdate --freeze`.
+`scripts/check_email.sh` fails if a file contains this machine's
+`git config user.email`: gitleaks does not treat an email as a secret.
 
-## `make brew-check`
+## Brewfiles vs this machine
 
-`brew bundle check --no-upgrade --verbose` on `Brewfile.common` and on the
-`Brewfile.$MACHINE_TYPE` of the current machine. Unlike lint it **does not
-validate the code, but the state of the machine**: it tells you whether the
-Brewfiles and what you actually have installed have diverged, in either direction.
+Not a pre-commit hook: it checks the state of the machine, not the code.
+It tells you whether the Brewfiles and what is installed have diverged:
+
+```bash
+brew bundle check --file=brew/Brewfile.common --no-upgrade --verbose
+brew bundle check --file=brew/Brewfile.work --no-upgrade --verbose
+```
 
 ## Notes
 

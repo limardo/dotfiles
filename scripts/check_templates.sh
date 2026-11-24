@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Renders every chezmoi template once per machine type, against a throwaway
 # config, and checks each output with the tool that understands its format.
-# Runs on the host, from the repo root (make templates, pre-commit).
+# Runs on the host, from the repo root (pre-commit).
 
 set -euo pipefail
 

@@ -10,31 +10,23 @@ permissions:
 
 env:
   CHEZMOI_VERSION: v2.74.2
+  PRE_COMMIT_VERSION: 4.7.0
 
 jobs:
-  shellcheck:
+  pre-commit:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        machine_type: [personal, work]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Install chezmoi
+      # scripts/check_templates.sh renders the templates with chezmoi and
+      # checks the rendered .zshrc with zsh -n.
+      - name: Install chezmoi and zsh
         run: |
           sh -c "$(curl -fsLS https://get.chezmoi.io)" -- -b "${HOME}/.local/bin" -t "${CHEZMOI_VERSION}"
           echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends zsh
 
-      # make lint renders the script templates with chezmoi: it needs a config
-      # with the data a real machine would have.
-      - name: Configure chezmoi
-        env:
-          MACHINE_TYPE: ${{ matrix.machine_type }}
-        run: |
-          chezmoi init --source="${GITHUB_WORKSPACE}" \
-            --promptChoice "machine_type=${MACHINE_TYPE}" \
-            --promptString git_email=ci@example.invalid
-
-      - run: make lint
+      - run: pipx run "pre-commit==${PRE_COMMIT_VERSION}" run --all-files --show-diff-on-failure

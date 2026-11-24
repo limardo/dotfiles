@@ -6,7 +6,7 @@ The content is split across `.claude/`:
 
 ## Verification
 
-- `make validate` — shellcheck + Brewfile consistency, a few seconds, on the host
+- `pre-commit run --all-files` — every static check, a few seconds, on the host (CI runs the same)
 
 Every command invoked by the chezmoi scripts or by the templates must be declared in a Brewfile:
 this machine is no proof that it exists.
