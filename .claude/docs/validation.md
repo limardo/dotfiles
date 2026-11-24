@@ -14,6 +14,9 @@ Covers the scripts in `home/.chezmoiscripts/` and
 `home/dot_config/mise/executable_after-install.sh`.
 They must stay **free of any warning**, not just free of errors.
 
+CI (`.github/workflows/lint.yml`) runs the same `make lint` on every push to
+`main` and every PR, once per machine type, with a throwaway chezmoi config.
+
 shellcheck cannot read a `.tmpl`: the script templates (`SHELL_TEMPLATES` in the
 Makefile) are rendered with `chezmoi execute-template` for this machine and
 checked on stdin.

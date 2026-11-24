@@ -1,5 +1,7 @@
 # dotfiles
 
+[![lint](https://github.com/limardo/dotfiles/actions/workflows/lint.yml/badge.svg)](https://github.com/limardo/dotfiles/actions/workflows/lint.yml)
+
 My macOS setup, managed with [chezmoi](https://www.chezmoi.io/). One command
 takes a fresh Mac to a working machine: Homebrew, apps, CLI tools, shell,
 dotfiles and system defaults.
